@@ -3,12 +3,13 @@
 import jsPDF from "jspdf";
 import { Card, CardContent } from "./ui/card";
 import { useInvoice } from "@/context/invoice-contact";
-import { InvoiceData } from "@/types/invoice";
+import { ExternalLink, Download } from "lucide-react"; // Imported icons for better UI
 
 export default function InvoicePreview() {
   const { invoice } = useInvoice();
 
-  const handleDownloadPDF = () => {
+  // 1. Extract PDF generation logic to a helper function
+  const generatePdfDocument = () => {
     const doc = new jsPDF();
     let y = 20;
 
@@ -68,8 +69,21 @@ export default function InvoicePreview() {
     doc.text("Total:", 140, y);
     doc.text(`$${invoice.total.toFixed(2)}`, 190, y, { align: "right" });
 
-    // Save the PDF directly
+    return doc;
+  };
+
+  // 2. Handle Download
+  const handleDownloadPDF = () => {
+    const doc = generatePdfDocument();
     doc.save(`Invoice-${invoice.invoiceNumber}.pdf`);
+  };
+
+  // 3. Handle Open in New Tab
+  const handleOpenNewTab = () => {
+    const doc = generatePdfDocument();
+    // output('bloburl') creates a blob URI that browsers can open
+    const pdfBlobUrl = doc.output('bloburl');
+    window.open(pdfBlobUrl, '_blank');
   };
 
   return (
@@ -78,12 +92,26 @@ export default function InvoicePreview() {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Invoice Preview</h1>
-          <button
-            onClick={handleDownloadPDF}
-            className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition"
-          >
-            Download PDF
-          </button>
+          
+          <div className="flex gap-3">
+            {/* New "View PDF" Button */}
+            <button
+              onClick={handleOpenNewTab}
+              className="flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition"
+            >
+              <ExternalLink className="w-4 h-4 mr-2" />
+              View PDF
+            </button>
+
+            {/* Existing Download Button */}
+            <button
+              onClick={handleDownloadPDF}
+              className="flex items-center px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Download PDF
+            </button>
+          </div>
         </div>
 
         {/* Invoice Card */}

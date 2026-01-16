@@ -4,7 +4,7 @@
 import InvoiceForm from "@/components/InvoiceForm";
 import InvoicePreview from "@/components/InvoicePreview";
 import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import { Eye, Pencil } from "lucide-react";
 import { useState } from "react";
 
 export default function Home() {
@@ -23,8 +23,17 @@ export default function Home() {
             </p>
           </div>
           <Button onClick={() => setShowPreview(!showPreview)}>
-            <Eye className="w-4 h-4 mr-2" />
-            Preview
+            {showPreview ? (
+              <>
+                <Pencil className="w-4 h-4 mr-2" />
+                Edit
+              </>
+            ) : (
+              <>
+                <Eye className="w-4 h-4 mr-2" />
+                Preview
+              </>
+            )}
           </Button>
         </div>
 
