@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { InvoiceProvider } from "@/components/providers/InvoiceProvider";
+import { cn } from "@/lib/utils";
+import Navbar from "@/components/layouts/Navbar";
 
-const alphabet = localFont({
-  src: "../public/fonts/Alphabet.otf",
-  variable: "--font-alphabet",
+const camood = localFont({
+  src: "../public/fonts/camood.otf",
+  variable: "--font-camood",
+});
+
+const urbanist = localFont({
+  src: "../public/fonts/urbanist.ttf",
+  variable: "--font-urbanist",
 });
 
 export const metadata: Metadata = {
@@ -20,13 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${alphabet.variable} antialiased`}
-        suppressHydrationWarning
-      >
-        <InvoiceProvider>
-          {children}
-        </InvoiceProvider>
+      <body className={cn(urbanist.variable, camood.variable, "antialiased")}>
+        <Navbar />
+        {children}
       </body>
     </html>
   );
