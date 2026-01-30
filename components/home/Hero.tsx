@@ -12,8 +12,18 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "../ui/scroll-area";
 import { Button } from "../ui/button";
 import { AiTwotoneCheckCircle } from "react-icons/ai";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Check } from "lucide-react";
 
-/* Types */
+/* types */
 type StepValue = "document" | "content" | "items" | "template";
 
 interface Step {
@@ -35,7 +45,7 @@ interface DocumentImage {
   isEditable: boolean;
 }
 
-/* Data */
+/* data */
 const steps: Step[] = [
   {
     value: "document",
@@ -131,10 +141,11 @@ const documentImages: DocumentImage[] = [
   },
 ];
 
-/* Main Component */
+/* main Component */
 const Hero = () => {
   const [activeStep, setActiveStep] = useState<StepValue>("document");
   const [selectedDoc, setSelectedDoc] = useState<number | null>(null);
+  const [completedSteps, setCompletedSteps] = useState<StepValue[]>([]);
 
   const currentIndex = steps.findIndex((step) => step.value === activeStep);
 
@@ -143,6 +154,10 @@ const Hero = () => {
 
   const handleNext = () => {
     if (currentIndex < steps.length - 1) {
+      setCompletedSteps((prev) => {
+        if (!prev.includes(activeStep)) return [...prev, activeStep];
+        return prev;
+      });
       setActiveStep(steps[currentIndex + 1].value);
     }
   };
@@ -181,10 +196,8 @@ const Hero = () => {
             className="mx-4 pt-2"
           >
             <div className="flex justify-start items-center gap-1">
-              <span className="hidden sm:inline font-urbanist text-gray-800">
-                Steps:
-              </span>
-              <TabsList className="bg-transparent font-urbanist">
+              <span className="hidden sm:inline  text-gray-800">Steps:</span>
+              <TabsList className="bg-transparent ">
                 {steps.map((step) => (
                   <TabsTrigger
                     key={step.value}
@@ -193,10 +206,17 @@ const Hero = () => {
                   >
                     <span
                       className={cn(
-                        "flex h-6 w-6 items-center justify-center text-xs font-medium border border-gray-400 rounded-3xl",
+                        "flex h-6 w-6 items-center justify-center text-xs font-medium border rounded-3xl",
+                        completedSteps.includes(step.value)
+                          ? "border-gray-400 bg-[#4f95e65c]"
+                          : "border-gray-400",
                       )}
                     >
-                      {step.number}
+                      {completedSteps.includes(step.value) ? (
+                        <Check className="h-3 w-3" />
+                      ) : (
+                        step.number
+                      )}
                     </span>
                     <span className="hidden sm:inline">{step.label}</span>
                   </TabsTrigger>
@@ -207,10 +227,10 @@ const Hero = () => {
             <TabsContent value="document">
               <Card className="border-none shadow-none bg-transparent">
                 <CardHeader className="p-0 mb-2">
-                  <CardTitle className="font-urbanist text-2xl font-semibold">
+                  <CardTitle className=" text-2xl font-semibold">
                     {getStep("document")?.label}
                   </CardTitle>
-                  <CardDescription className="font-urbanist">
+                  <CardDescription className="">
                     {getStep("document")?.description}
                   </CardDescription>
                 </CardHeader>
@@ -243,12 +263,10 @@ const Hero = () => {
                             className="h-20 w-auto object-contain"
                           />
 
-                          <span className="font-urbanist text-gray-800 font-semibold'">
+                          <span className=" text-gray-800 font-semibold'">
                             {item.label}
                           </span>
-                          <p className="font-urbanist text-xs">
-                            {item.description}
-                          </p>
+                          <p className=" text-xs">{item.description}</p>
                         </div>
                       ))}
                     </div>
@@ -260,16 +278,200 @@ const Hero = () => {
             <TabsContent value="content">
               <Card className="border-none shadow-none bg-transparent">
                 <CardHeader className="p-0 mb-2">
-                  <CardTitle className="font-urbanist text-2xl font-semibold">
+                  <CardTitle className=" text-2xl font-semibold">
                     {getStep("content")?.label}
                   </CardTitle>
-                  <CardDescription className="font-urbanist">
+                  <CardDescription className="">
                     {getStep("content")?.description}
                   </CardDescription>
                 </CardHeader>
 
                 <CardContent className="p-0 py-2 border border-y-gray-200">
-                  <ScrollArea className="h-90 pl-2 pr-4"></ScrollArea>
+                  <ScrollArea className="h-90 pl-2 pr-4">
+                    <div className="space-y-8">
+                      {/* general info */}
+                      <div className="bg-white rounded-xl p-4 border ">
+                        <h3 className="text-lg font-semibold mb-4">
+                          General Information
+                        </h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <Label>Invoice Number *</Label>
+                            <Input placeholder="INV-001" />
+                          </div>
+
+                          <div className="space-y-1">
+                            <Label>Invoice Date</Label>
+                            <Input type="date" />
+                          </div>
+
+                          <div className="space-y-1">
+                            <Label>Due Date</Label>
+                            <Input type="date" />
+                          </div>
+
+                          <div className="space-y-1">
+                            <Label>Order / PO Number</Label>
+                            <Input placeholder="PO-1001" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* issuer */}
+                      <div className="bg-white rounded-xl p-4 border">
+                        <h3 className="text-lg font-semibold mb-4">
+                          Issuer (Your Business)
+                        </h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <Label>Business Name *</Label>
+                            <Input placeholder="My Company LLC" />
+                          </div>
+
+                          <div className="space-y-1">
+                            <Label>Tax ID / VAT</Label>
+                            <Input placeholder="123456789" />
+                          </div>
+
+                          <div className="space-y-1">
+                            <Label>Email</Label>
+                            <Input
+                              type="email"
+                              placeholder="billing@company.com"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <Label>Phone</Label>
+                            <Input placeholder="+1 234 567 890" />
+                          </div>
+
+                          <div className="space-y-1">
+                            <Label>Postal Code</Label>
+                            <Input placeholder="12345" />
+                          </div>
+
+                          <div className="space-y-1 md:col-span-2">
+                            <Label>Address</Label>
+                            <Input placeholder="Street, City, Country" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* recipient */}
+                      {/* recipient */}
+                      <div className="bg-white rounded-xl p-4 border">
+                        <h3 className="text-lg font-semibold mb-4">
+                          Recipient (Client)
+                        </h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <Label>Client Name *</Label>
+                            <Input placeholder="Client Company" />
+                          </div>
+
+                          <div className="space-y-1">
+                            <Label>Client Tax ID</Label>
+                            <Input placeholder="987654321" />
+                          </div>
+
+                          <div className="space-y-1">
+                            <Label>Email</Label>
+                            <Input
+                              type="email"
+                              placeholder="client@email.com"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <Label>Phone</Label>
+                            <Input placeholder="+1 987 654 321" />
+                          </div>
+
+                          <div className="space-y-1">
+                            <Label>Postal Code</Label>
+                            <Input placeholder="12345" />
+                          </div>
+
+                          <div className="space-y-1 md:col-span-2">
+                            <Label>Address</Label>
+                            <Input placeholder="123 Client Street, City, Country" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* payment */}
+                      <div className="bg-white rounded-xl p-4 border">
+                        <h3 className="text-lg font-semibold mb-4">
+                          Payment Details
+                        </h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Payment Terms */}
+                          <div className="space-y-1">
+                            <Label>Payment Terms</Label>
+                            <Select>
+                              <SelectTrigger className="min-w-full">
+                                <SelectValue placeholder="Select Payment Term" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Due on receipt">
+                                  Due on receipt
+                                </SelectItem>
+                                <SelectItem value="Net 7">Net 7</SelectItem>
+                                <SelectItem value="Net 15">Net 15</SelectItem>
+                                <SelectItem value="Net 30">Net 30</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {/* Currency */}
+                          <div className="space-y-1">
+                            <Label>Currency</Label>
+                            <Select>
+                              <SelectTrigger className="min-w-full">
+                                <SelectValue placeholder="Select Currency" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="USD">USD</SelectItem>
+                                <SelectItem value="EUR">EUR</SelectItem>
+                                <SelectItem value="GBP">GBP</SelectItem>
+                                <SelectItem value="PKR">PKR</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* signature */}
+                      <div className="bg-white rounded-xl p-4 border">
+                        <h3 className="text-lg font-semibold mb-4">
+                          Signature
+                        </h3>
+                        <div className="space-y-1">
+                          <Button className="w-full justify-start border border-gray-300 text-gray-200">
+                            + Create a signature
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* extras / terms and conditions */}
+                      <div className="bg-white rounded-xl p-4 border">
+                        <h3 className="text-lg font-semibold mb-4">Extras</h3>
+                        <div className="space-y-1">
+                          <Label>Terms and conditions</Label>
+                          <textarea
+                            className="w-full border border-gray-200 rounded-md p-2 resize-none focus:outline-none focus:ring-1 focus:ring-[#4F96E6]"
+                            rows={4}
+                            placeholder="Enter terms and conditions..."
+                          ></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </ScrollArea>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -277,10 +479,10 @@ const Hero = () => {
             <TabsContent value="items">
               <Card className="border-none shadow-none bg-transparent">
                 <CardHeader className="p-0 mb-2">
-                  <CardTitle className="font-urbanist text-2xl font-semibold">
+                  <CardTitle className=" text-2xl font-semibold">
                     {getStep("items")?.label}
                   </CardTitle>
-                  <CardDescription className="font-urbanist">
+                  <CardDescription className="">
                     {getStep("items")?.description}
                   </CardDescription>
                 </CardHeader>
@@ -294,10 +496,10 @@ const Hero = () => {
             <TabsContent value="template">
               <Card className="border-none shadow-none bg-transparent">
                 <CardHeader className="p-0 mb-2">
-                  <CardTitle className="font-urbanist text-2xl font-semibold">
+                  <CardTitle className=" text-2xl font-semibold">
                     {getStep("template")?.label}
                   </CardTitle>
-                  <CardDescription className="font-urbanist">
+                  <CardDescription className="">
                     {getStep("template")?.description}
                   </CardDescription>
                 </CardHeader>
@@ -313,7 +515,7 @@ const Hero = () => {
                 <Button
                   onClick={handleBack}
                   disabled={currentIndex === 0}
-                  className="bg-[#4F96E6] text-white text-[18px] font-urbanist max-w-35 w-full h-11 rounded-full font-medium transition disabled:opacity-50"
+                  className="bg-[#4F96E6] text-white text-[18px]  max-w-35 w-full h-11 rounded-full font-medium transition disabled:opacity-50"
                 >
                   Back
                 </Button>
@@ -321,7 +523,7 @@ const Hero = () => {
                 <Button
                   onClick={handleNext}
                   disabled={currentIndex === steps.length - 1}
-                  className="bg-[#4F96E6] text-white text-[18px] font-urbanist max-w-35 w-full h-11 rounded-full font-medium transition disabled:opacity-50"
+                  className="bg-[#4F96E6] text-white text-[18px]  max-w-35 w-full h-11 rounded-full font-medium transition disabled:opacity-50"
                 >
                   Continue
                 </Button>
@@ -330,7 +532,7 @@ const Hero = () => {
           </Tabs>
         </div>
 
-        <div className="min-h-160 bg-gray-50 rounded-2xl md:rounded-3xl col-span-1 p-4 font-urbanist">
+        <div className="min-h-160 bg-gray-50 rounded-2xl md:rounded-3xl col-span-1 p-4 ">
           {renderRightPanel()}
         </div>
       </div>

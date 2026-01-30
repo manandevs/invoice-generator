@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(urbanist.variable, camood.variable, "antialiased")}>
+      <body className={cn(urbanist.variable, camood.variable, "antialiased font-urbanist")}>
         <Navbar />
         {children}
       </body>
