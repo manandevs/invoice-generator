@@ -15,9 +15,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const NAV_LINKS = [
-    { name: "How it works", href: "/#how-it-works" },
-    { name: "Pricing", href: "/pricing" },
-    { name: "FAQs", href: "/faqs" },
+    { name: "How it works", href: "/how-it-works" },
   ];
 
   return (
