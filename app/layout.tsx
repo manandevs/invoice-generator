@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/layouts/Navbar";
+import Footer from "@/components/home/Footer";
 
 const camood = localFont({
   src: "../public/fonts/camood.otf",
@@ -26,9 +27,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(urbanist.variable, camood.variable, "antialiased font-urbanist")}>
+      <body
+        className={cn(
+          urbanist.variable,
+          camood.variable,
+          "antialiased font-urbanist",
+        )}
+      >
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );

@@ -21,31 +21,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Check } from "lucide-react";
+import { Check, Plus, Trash2 } from "lucide-react";
+import {
+  DocumentImage,
+  Step,
+  StepValue,
+  InvoiceData,
+  InvoiceItem,
+} from "@/lib/types";
+import DocumentPreview from "./previews/DocumentPreview";
+import ContentPreview from "./previews/ContentPreview";
+import ItemsPreview from "./previews/ItemsPreview";
+import TemplatePreview from "./previews/TemplatePreview";
 
-/* types */
-type StepValue = "document" | "content" | "items" | "template";
-
-interface Step {
-  value: StepValue;
-  number: number;
-  label: string;
-  description: string;
-}
-
-interface DocumentImage {
-  id: string;
-  src: string;
-  label: string;
-  description: string;
-  longDescription: string;
-  features: string[];
-  recommendedFor: string[];
-  hasTax: boolean;
-  isEditable: boolean;
-}
-
-/* data */
+/* --- DATA CONFIGURATION --- */
 const steps: Step[] = [
   {
     value: "document",
@@ -80,19 +69,9 @@ const documentImages: DocumentImage[] = [
     label: "Invoice",
     description: "Standard bill for goods or services provided.",
     longDescription:
-      "An invoice is issued after goods or services are delivered. It records the transaction and requests payment from the client.",
-    features: [
-      "Invoice number",
-      "Issue date & due date",
-      "Client & business details",
-      "Line items with pricing",
-      "Subtotal, tax, and total",
-    ],
-    recommendedFor: [
-      "Completed sales",
-      "Service-based businesses",
-      "Regular client billing",
-    ],
+      "An invoice is issued after goods or services are delivered.",
+    features: ["Invoice number", "Line items", "Subtotal, tax, and total"],
+    recommendedFor: ["Completed sales", "Service-based businesses"],
     hasTax: false,
     isEditable: true,
   },
@@ -101,20 +80,9 @@ const documentImages: DocumentImage[] = [
     src: "/images/image.png",
     label: "Tax Invoice",
     description: "Invoice including applicable tax details.",
-    longDescription:
-      "A tax invoice includes legally required tax information and is used for VAT/GST compliant transactions.",
-    features: [
-      "Tax registration number",
-      "Tax breakdown (VAT/GST)",
-      "Invoice & due dates",
-      "Buyer & seller details",
-      "Tax-compliant totals",
-    ],
-    recommendedFor: [
-      "VAT/GST registered businesses",
-      "Government or enterprise clients",
-      "Tax reporting",
-    ],
+    longDescription: "A tax invoice includes legally required tax information.",
+    features: ["Tax registration number", "Tax breakdown (VAT/GST)"],
+    recommendedFor: ["VAT/GST registered businesses"],
     hasTax: true,
     isEditable: true,
   },
@@ -124,31 +92,116 @@ const documentImages: DocumentImage[] = [
     label: "Proforma Invoice",
     description: "Preliminary invoice issued before final sale.",
     longDescription:
-      "A proforma invoice is a preliminary bill sent before goods or services are delivered. It helps clients review costs in advance.",
-    features: [
-      "Estimated pricing",
-      "Valid-until date",
-      "Product or service preview",
-      "No payment request",
-    ],
-    recommendedFor: [
-      "Price confirmation",
-      "International trade",
-      "Client approvals",
-    ],
+      "A proforma invoice is a preliminary bill sent before goods or services are delivered.",
+    features: ["Estimated pricing", "Valid-until date"],
+    recommendedFor: ["Price confirmation", "International trade"],
     hasTax: false,
     isEditable: false,
   },
 ];
 
-/* main Component */
+// Available Accent Colors
+const colorOptions = [
+  { name: "Blue", value: "#4F96E6" },
+  { name: "Emerald", value: "#10B981" },
+  { name: "Purple", value: "#8B5CF6" },
+  { name: "Orange", value: "#F97316" },
+  { name: "Red", value: "#EF4444" },
+  { name: "Gray", value: "#374151" },
+];
+
+/* --- MAIN COMPONENT --- */
 const Hero = () => {
   const [activeStep, setActiveStep] = useState<StepValue>("document");
-  const [selectedDoc, setSelectedDoc] = useState<number | null>(null);
+  const [selectedDoc, setSelectedDoc] = useState<number | null>(0);
   const [completedSteps, setCompletedSteps] = useState<StepValue[]>([]);
 
-  const currentIndex = steps.findIndex((step) => step.value === activeStep);
+  // -- State for Invoice Form Data --
+  const [invoiceData, setInvoiceData] = useState<InvoiceData>({
+    invoiceNumber: "",
+    invoiceDate: new Date().toISOString().split("T")[0],
+    dueDate: "",
+    poNumber: "",
+    senderName: "",
+    senderTaxId: "",
+    senderEmail: "",
+    senderPhone: "",
+    senderZip: "",
+    senderAddress: "",
+    clientName: "",
+    clientTaxId: "",
+    clientEmail: "",
+    clientPhone: "",
+    clientZip: "",
+    clientAddress: "",
+    paymentTerms: "",
+    currency: "USD",
+    notes: "",
+    items: [{ id: "1", description: "", quantity: 1, price: 0 }],
+    accentColor: "#4F96E6", // Default Color
+  });
 
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setInvoiceData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (name: keyof InvoiceData, value: string) => {
+    setInvoiceData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Item Logic
+  const handleAddItem = () => {
+    setInvoiceData((prev) => ({
+      ...prev,
+      items: [
+        ...prev.items,
+        {
+          id: Math.random().toString(36).substr(2, 9),
+          description: "",
+          quantity: 1,
+          price: 0,
+        },
+      ],
+    }));
+  };
+
+  const handleRemoveItem = (id: string) => {
+    setInvoiceData((prev) => ({
+      ...prev,
+      items: prev.items.filter((item) => item.id !== id),
+    }));
+  };
+
+  const handleItemChange = (
+    id: string,
+    field: keyof InvoiceItem,
+    value: string | number,
+  ) => {
+    setInvoiceData((prev) => ({
+      ...prev,
+      items: prev.items.map((item) =>
+        item.id === id ? { ...item, [field]: value } : item,
+      ),
+    }));
+  };
+
+  const calculateTotal = () => {
+    return invoiceData.items.reduce(
+      (acc, item) => acc + item.quantity * item.price,
+      0,
+    );
+  };
+
+  // Color Selection Logic
+  const handleColorChange = (color: string) => {
+    setInvoiceData((prev) => ({ ...prev, accentColor: color }));
+  };
+
+  // Navigation Logic
+  const currentIndex = steps.findIndex((step) => step.value === activeStep);
   const selectedDocument: DocumentImage | null =
     selectedDoc !== null ? documentImages[selectedDoc] : null;
 
@@ -176,11 +229,11 @@ const Hero = () => {
       case "document":
         return <DocumentPreview selectedDocument={selectedDocument} />;
       case "content":
-        return <ContentPreview />;
+        return <ContentPreview data={invoiceData} />;
       case "items":
-        return <ItemsPreview />;
+        return <ItemsPreview data={invoiceData} />;
       case "template":
-        return <TemplatePreview />;
+        return <TemplatePreview data={invoiceData} />;
       default:
         return null;
     }
@@ -188,16 +241,17 @@ const Hero = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 p-22 md:p-27.5 flex items-center justify-between">
-      <div className="w-full grid grid-cols-3 p-2 bg-[#4f95e65c] rounded-2xl md:rounded-3xl backdrop-blur-xl bg-linear-to-br from-[#4f95e6]/40 via-[#4f95e6]/10 to-transparent border border-white/30 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] ring-1 ring-white/20">
-        <div className="min-h-160 bg-gray-50 rounded-2xl md:rounded-3xl col-span-2">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-3 p-2 bg-[#4f95e6c2] rounded-2xl md:rounded-3xl backdrop-blur-xl bg-linear-to-br from-[#4f95e6]/40 via-[#4f95e6]/10 to-transparent border border-white/30 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] ring-1 ring-white/20">
+        <div className="min-h-160 bg-gray-50 rounded-2xl md:rounded-3xl col-span-1 lg:col-span-2">
           <Tabs
             value={activeStep}
             onValueChange={(v) => setActiveStep(v as StepValue)}
             className="mx-4 pt-2"
           >
+            {/* Steps Indicator */}
             <div className="flex justify-start items-center gap-1">
-              <span className="hidden sm:inline  text-gray-800">Steps:</span>
-              <TabsList className="bg-transparent ">
+              <span className="hidden sm:inline text-gray-800">Steps:</span>
+              <TabsList className="bg-transparent">
                 {steps.map((step) => (
                   <TabsTrigger
                     key={step.value}
@@ -224,17 +278,17 @@ const Hero = () => {
               </TabsList>
             </div>
 
+            {/* TAB 1: DOCUMENT */}
             <TabsContent value="document">
               <Card className="border-none shadow-none bg-transparent">
                 <CardHeader className="p-0 mb-2">
-                  <CardTitle className=" text-2xl font-semibold">
+                  <CardTitle className="text-2xl font-semibold">
                     {getStep("document")?.label}
                   </CardTitle>
-                  <CardDescription className="">
+                  <CardDescription>
                     {getStep("document")?.description}
                   </CardDescription>
                 </CardHeader>
-
                 <CardContent className="p-0 py-2 border border-y-gray-200">
                   <ScrollArea className="h-90 pl-2 pr-4">
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -262,11 +316,10 @@ const Hero = () => {
                             alt={item.label}
                             className="h-20 w-auto object-contain"
                           />
-
-                          <span className=" text-gray-800 font-semibold'">
+                          <span className="text-gray-800 font-semibold">
                             {item.label}
                           </span>
-                          <p className=" text-xs">{item.description}</p>
+                          <p className="text-xs">{item.description}</p>
                         </div>
                       ))}
                     </div>
@@ -275,145 +328,204 @@ const Hero = () => {
               </Card>
             </TabsContent>
 
+            {/* TAB 2: CONTENT */}
             <TabsContent value="content">
               <Card className="border-none shadow-none bg-transparent">
                 <CardHeader className="p-0 mb-2">
-                  <CardTitle className=" text-2xl font-semibold">
+                  <CardTitle className="text-2xl font-semibold">
                     {getStep("content")?.label}
                   </CardTitle>
-                  <CardDescription className="">
+                  <CardDescription>
                     {getStep("content")?.description}
                   </CardDescription>
                 </CardHeader>
-
                 <CardContent className="p-0 py-2 border border-y-gray-200">
                   <ScrollArea className="h-90 pl-2 pr-4">
                     <div className="space-y-8">
-                      {/* general info */}
+                      {/* General Info */}
                       <div className="bg-white rounded-xl p-4 border ">
                         <h3 className="text-lg font-semibold mb-4">
                           General Information
                         </h3>
-
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-1">
                             <Label>Invoice Number *</Label>
-                            <Input placeholder="INV-001" />
+                            <Input
+                              name="invoiceNumber"
+                              value={invoiceData.invoiceNumber}
+                              onChange={handleInputChange}
+                              placeholder="INV-001"
+                            />
                           </div>
-
                           <div className="space-y-1">
                             <Label>Invoice Date</Label>
-                            <Input type="date" />
+                            <Input
+                              type="date"
+                              name="invoiceDate"
+                              value={invoiceData.invoiceDate}
+                              onChange={handleInputChange}
+                            />
                           </div>
-
                           <div className="space-y-1">
                             <Label>Due Date</Label>
-                            <Input type="date" />
+                            <Input
+                              type="date"
+                              name="dueDate"
+                              value={invoiceData.dueDate}
+                              onChange={handleInputChange}
+                            />
                           </div>
-
                           <div className="space-y-1">
                             <Label>Order / PO Number</Label>
-                            <Input placeholder="PO-1001" />
+                            <Input
+                              name="poNumber"
+                              value={invoiceData.poNumber}
+                              onChange={handleInputChange}
+                              placeholder="PO-1001"
+                            />
                           </div>
                         </div>
                       </div>
-
-                      {/* issuer */}
+                      {/* Issuer */}
                       <div className="bg-white rounded-xl p-4 border">
                         <h3 className="text-lg font-semibold mb-4">
                           Issuer (Your Business)
                         </h3>
-
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-1">
                             <Label>Business Name *</Label>
-                            <Input placeholder="My Company LLC" />
+                            <Input
+                              name="senderName"
+                              value={invoiceData.senderName}
+                              onChange={handleInputChange}
+                              placeholder="My Company LLC"
+                            />
                           </div>
-
                           <div className="space-y-1">
                             <Label>Tax ID / VAT</Label>
-                            <Input placeholder="123456789" />
+                            <Input
+                              name="senderTaxId"
+                              value={invoiceData.senderTaxId}
+                              onChange={handleInputChange}
+                              placeholder="123456789"
+                            />
                           </div>
-
                           <div className="space-y-1">
                             <Label>Email</Label>
                             <Input
                               type="email"
+                              name="senderEmail"
+                              value={invoiceData.senderEmail}
+                              onChange={handleInputChange}
                               placeholder="billing@company.com"
                             />
                           </div>
-
                           <div className="space-y-1">
                             <Label>Phone</Label>
-                            <Input placeholder="+1 234 567 890" />
+                            <Input
+                              name="senderPhone"
+                              value={invoiceData.senderPhone}
+                              onChange={handleInputChange}
+                              placeholder="+1 234 567 890"
+                            />
                           </div>
-
                           <div className="space-y-1">
                             <Label>Postal Code</Label>
-                            <Input placeholder="12345" />
+                            <Input
+                              name="senderZip"
+                              value={invoiceData.senderZip}
+                              onChange={handleInputChange}
+                              placeholder="12345"
+                            />
                           </div>
-
                           <div className="space-y-1 md:col-span-2">
                             <Label>Address</Label>
-                            <Input placeholder="Street, City, Country" />
+                            <Input
+                              name="senderAddress"
+                              value={invoiceData.senderAddress}
+                              onChange={handleInputChange}
+                              placeholder="Street, City, Country"
+                            />
                           </div>
                         </div>
                       </div>
-
-                      {/* recipient */}
-                      {/* recipient */}
+                      {/* Recipient */}
                       <div className="bg-white rounded-xl p-4 border">
                         <h3 className="text-lg font-semibold mb-4">
                           Recipient (Client)
                         </h3>
-
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-1">
                             <Label>Client Name *</Label>
-                            <Input placeholder="Client Company" />
+                            <Input
+                              name="clientName"
+                              value={invoiceData.clientName}
+                              onChange={handleInputChange}
+                              placeholder="Client Company"
+                            />
                           </div>
-
                           <div className="space-y-1">
                             <Label>Client Tax ID</Label>
-                            <Input placeholder="987654321" />
+                            <Input
+                              name="clientTaxId"
+                              value={invoiceData.clientTaxId}
+                              onChange={handleInputChange}
+                              placeholder="987654321"
+                            />
                           </div>
-
                           <div className="space-y-1">
                             <Label>Email</Label>
                             <Input
                               type="email"
+                              name="clientEmail"
+                              value={invoiceData.clientEmail}
+                              onChange={handleInputChange}
                               placeholder="client@email.com"
                             />
                           </div>
-
                           <div className="space-y-1">
                             <Label>Phone</Label>
-                            <Input placeholder="+1 987 654 321" />
+                            <Input
+                              name="clientPhone"
+                              value={invoiceData.clientPhone}
+                              onChange={handleInputChange}
+                              placeholder="+1 987 654 321"
+                            />
                           </div>
-
                           <div className="space-y-1">
                             <Label>Postal Code</Label>
-                            <Input placeholder="12345" />
+                            <Input
+                              name="clientZip"
+                              value={invoiceData.clientZip}
+                              onChange={handleInputChange}
+                              placeholder="12345"
+                            />
                           </div>
-
                           <div className="space-y-1 md:col-span-2">
                             <Label>Address</Label>
-                            <Input placeholder="123 Client Street, City, Country" />
+                            <Input
+                              name="clientAddress"
+                              value={invoiceData.clientAddress}
+                              onChange={handleInputChange}
+                              placeholder="123 Client Street, City, Country"
+                            />
                           </div>
                         </div>
                       </div>
-
-                      {/* payment */}
+                      {/* Payment & Extras */}
                       <div className="bg-white rounded-xl p-4 border">
                         <h3 className="text-lg font-semibold mb-4">
                           Payment Details
                         </h3>
-
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {/* Payment Terms */}
                           <div className="space-y-1">
                             <Label>Payment Terms</Label>
-                            <Select>
+                            <Select
+                              value={invoiceData.paymentTerms}
+                              onValueChange={(val) =>
+                                handleSelectChange("paymentTerms", val)
+                              }
+                            >
                               <SelectTrigger className="min-w-full">
                                 <SelectValue placeholder="Select Payment Term" />
                               </SelectTrigger>
@@ -427,11 +539,14 @@ const Hero = () => {
                               </SelectContent>
                             </Select>
                           </div>
-
-                          {/* Currency */}
                           <div className="space-y-1">
                             <Label>Currency</Label>
-                            <Select>
+                            <Select
+                              value={invoiceData.currency}
+                              onValueChange={(val) =>
+                                handleSelectChange("currency", val)
+                              }
+                            >
                               <SelectTrigger className="min-w-full">
                                 <SelectValue placeholder="Select Currency" />
                               </SelectTrigger>
@@ -445,20 +560,6 @@ const Hero = () => {
                           </div>
                         </div>
                       </div>
-
-                      {/* signature */}
-                      <div className="bg-white rounded-xl p-4 border">
-                        <h3 className="text-lg font-semibold mb-4">
-                          Signature
-                        </h3>
-                        <div className="space-y-1">
-                          <Button className="w-full justify-start border border-gray-300 text-gray-200">
-                            + Create a signature
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* extras / terms and conditions */}
                       <div className="bg-white rounded-xl p-4 border">
                         <h3 className="text-lg font-semibold mb-4">Extras</h3>
                         <div className="space-y-1">
@@ -466,6 +567,9 @@ const Hero = () => {
                           <textarea
                             className="w-full border border-gray-200 rounded-md p-2 resize-none focus:outline-none focus:ring-1 focus:ring-[#4F96E6]"
                             rows={4}
+                            name="notes"
+                            value={invoiceData.notes}
+                            onChange={handleInputChange}
                             placeholder="Enter terms and conditions..."
                           ></textarea>
                         </div>
@@ -476,54 +580,189 @@ const Hero = () => {
               </Card>
             </TabsContent>
 
+            {/* TAB 3: ITEMS */}
             <TabsContent value="items">
               <Card className="border-none shadow-none bg-transparent">
                 <CardHeader className="p-0 mb-2">
-                  <CardTitle className=" text-2xl font-semibold">
+                  <CardTitle className="text-2xl font-semibold">
                     {getStep("items")?.label}
                   </CardTitle>
-                  <CardDescription className="">
+                  <CardDescription>
                     {getStep("items")?.description}
                   </CardDescription>
                 </CardHeader>
-
                 <CardContent className="p-0 py-2 border border-y-gray-200">
-                  <ScrollArea className="h-90 pl-2 pr-4"></ScrollArea>
+                  <ScrollArea className="h-90 pl-2 pr-4">
+                    <div className="space-y-4">
+                      {/* Items List */}
+                      <div className="space-y-3">
+                        {invoiceData.items.map((item) => (
+                          <div
+                            key={item.id}
+                            className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex gap-3 items-start animate-in fade-in slide-in-from-bottom-2"
+                          >
+                            <div className="grid grid-cols-12 gap-3 w-full">
+                              <div className="col-span-6 space-y-1">
+                                <Label className="text-xs text-gray-500">
+                                  Description
+                                </Label>
+                                <Input
+                                  value={item.description}
+                                  onChange={(e) =>
+                                    handleItemChange(
+                                      item.id,
+                                      "description",
+                                      e.target.value,
+                                    )
+                                  }
+                                  placeholder="Item name"
+                                  className="h-9"
+                                />
+                              </div>
+                              <div className="col-span-2 space-y-1">
+                                <Label className="text-xs text-gray-500">
+                                  Qty
+                                </Label>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  value={item.quantity}
+                                  onChange={(e) =>
+                                    handleItemChange(
+                                      item.id,
+                                      "quantity",
+                                      Number(e.target.value),
+                                    )
+                                  }
+                                  className="h-9"
+                                />
+                              </div>
+                              <div className="col-span-3 space-y-1">
+                                <Label className="text-xs text-gray-500">
+                                  Price
+                                </Label>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  value={item.price}
+                                  onChange={(e) =>
+                                    handleItemChange(
+                                      item.id,
+                                      "price",
+                                      Number(e.target.value),
+                                    )
+                                  }
+                                  placeholder="0.00"
+                                  className="h-9"
+                                />
+                              </div>
+                              <div className="col-span-1 flex items-end justify-center pb-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleRemoveItem(item.id)}
+                                  className="text-red-400 hover:text-red-600 hover:bg-red-50 h-8 w-8"
+                                  disabled={invoiceData.items.length === 1}
+                                >
+                                  <Trash2 size={16} />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <Button
+                        onClick={handleAddItem}
+                        variant="outline"
+                        className="w-full border-dashed border-gray-300 text-gray-500 hover:border-[#4F96E6] hover:text-[#4F96E6]"
+                      >
+                        <Plus size={16} className="mr-2" /> Add New Item
+                      </Button>
+                      <div className="bg-[#4F96E6]/5 rounded-xl p-4 border border-[#4F96E6]/20 flex justify-between items-center">
+                        <span className="font-medium text-gray-700">
+                          Total Amount
+                        </span>
+                        <span className="text-xl font-bold text-[#4F96E6]">
+                          {invoiceData.currency} {calculateTotal().toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  </ScrollArea>
                 </CardContent>
               </Card>
             </TabsContent>
 
+            {/* TAB 4: TEMPLATE (NEW) */}
             <TabsContent value="template">
               <Card className="border-none shadow-none bg-transparent">
                 <CardHeader className="p-0 mb-2">
-                  <CardTitle className=" text-2xl font-semibold">
+                  <CardTitle className="text-2xl font-semibold">
                     {getStep("template")?.label}
                   </CardTitle>
-                  <CardDescription className="">
+                  <CardDescription>
                     {getStep("template")?.description}
                   </CardDescription>
                 </CardHeader>
-
                 <CardContent className="p-0 py-2 border border-y-gray-200">
-                  <ScrollArea className="h-90 pl-2 pr-4"></ScrollArea>
+                  <ScrollArea className="h-90 pl-2 pr-4">
+                    <div className="space-y-6">
+                      {/* Color Selector */}
+                      <div className="bg-white rounded-xl p-6 border shadow-sm">
+                        <h3 className="text-lg font-semibold mb-4">
+                          Accent Color
+                        </h3>
+                        <div className="flex flex-wrap gap-4">
+                          {colorOptions.map((color) => (
+                            <div
+                              key={color.value}
+                              onClick={() => handleColorChange(color.value)}
+                              className={cn(
+                                "h-12 w-12 rounded-full cursor-pointer flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm border border-gray-100",
+                                invoiceData.accentColor === color.value
+                                  ? "ring-2 ring-offset-2 ring-gray-400 scale-110"
+                                  : "",
+                              )}
+                              style={{ backgroundColor: color.value }}
+                              title={color.name}
+                            >
+                              {invoiceData.accentColor === color.value && (
+                                <Check className="text-white w-6 h-6 drop-shadow-md" />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="bg-[#4F96E6]/5 rounded-xl p-4 border border-[#4F96E6]/20">
+                        <h4 className="font-medium text-[#4F96E6] mb-2">
+                          Ready to Download?
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          Your invoice is ready! Check the preview on the right.
+                          If everything looks good, click the download button in
+                          the preview pane.
+                        </p>
+                      </div>
+                    </div>
+                  </ScrollArea>
                 </CardContent>
               </Card>
             </TabsContent>
 
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center justify-between gap-4">
+            {/* FOOTER NAVIGATION */}
+            <div className="flex items-center justify-between gap-4 my-4">
+              <div className="flex items-center justify-between gap-4 w-full">
                 <Button
                   onClick={handleBack}
                   disabled={currentIndex === 0}
-                  className="bg-[#4F96E6] text-white text-[18px]  max-w-35 w-full h-11 rounded-full font-medium transition disabled:opacity-50"
+                  className="bg-[#4F96E6] text-white text-[18px] max-w-35 w-full h-11 rounded-full font-medium transition disabled:opacity-50"
                 >
                   Back
                 </Button>
-
                 <Button
                   onClick={handleNext}
                   disabled={currentIndex === steps.length - 1}
-                  className="bg-[#4F96E6] text-white text-[18px]  max-w-35 w-full h-11 rounded-full font-medium transition disabled:opacity-50"
+                  className="bg-[#4F96E6] text-white text-[18px] max-w-35 w-full h-11 rounded-full font-medium transition disabled:opacity-50"
                 >
                   Continue
                 </Button>
@@ -532,7 +771,8 @@ const Hero = () => {
           </Tabs>
         </div>
 
-        <div className="min-h-160 bg-gray-50 rounded-2xl md:rounded-3xl col-span-1 p-4 ">
+        {/* RIGHT PANEL PREVIEW */}
+        <div className="min-h-160 bg-gray-50 rounded-2xl md:rounded-3xl col-span-1 p-4">
           {renderRightPanel()}
         </div>
       </div>
@@ -541,105 +781,3 @@ const Hero = () => {
 };
 
 export default Hero;
-
-interface DocumentPreviewProps {
-  selectedDocument: DocumentImage | null;
-}
-
-const DocumentPreview: React.FC<DocumentPreviewProps> = ({
-  selectedDocument,
-}) => {
-  if (!selectedDocument) {
-    return (
-      <div className="h-full flex items-center justify-center text-gray-400">
-        Select a document to preview
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className=" flex flex-col items-start gap-2">
-        <div className="flex justify-start items-end gap-2">
-          <img
-            src={selectedDocument.src}
-            alt={selectedDocument.label}
-            className="h-8"
-          />
-          <h3 className="text-xl font-semibold">{selectedDocument.label}</h3>
-        </div>
-        <p className="text-sm text-gray-600 mt-1">
-          {selectedDocument.longDescription}
-        </p>
-      </div>
-
-      <div>
-        <h4 className="text-sm font-semibold mb-2">Includes</h4>
-        <ul className="space-y-1 text-sm">
-          {selectedDocument.features.map((feature, i) => (
-            <li key={i} className="flex items-center gap-2">
-              <AiTwotoneCheckCircle className="text-[#4F96E6]" />
-              {feature}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="flex gap-2 flex-wrap">
-        {selectedDocument.recommendedFor.map((item, i) => (
-          <span
-            key={i}
-            className="px-3 py-1 text-xs rounded-full bg-[#4F96E6]/10 text-[#4F96E6]"
-          >
-            {item}
-          </span>
-        ))}
-      </div>
-
-      <div className="mt-6 rounded-xl border border-dashed border-[#4F96E6]/40 bg-[#4F96E6]/5 p-4 space-y-3">
-        <h4 className="text-sm font-semibold text-[#4F96E6]">Next steps</h4>
-
-        <ul className="space-y-2 text-sm text-gray-700">
-          <li className="flex items-start gap-2">
-            <AiTwotoneCheckCircle className="mt-0.5 text-[#4F96E6]" />
-            Review the selected document type
-          </li>
-          <li className="flex items-start gap-2">
-            <AiTwotoneCheckCircle className="mt-0.5 text-[#4F96E6]" />
-            Click <span className="font-medium">Continue</span> to add invoice
-            content
-          </li>
-          <li className="flex items-start gap-2">
-            <AiTwotoneCheckCircle className="mt-0.5 text-[#4F96E6]" />
-            Add items and choose a template in later steps
-          </li>
-        </ul>
-
-        <p className="text-xs text-gray-500">
-          You can come back and change the document type at any time.
-        </p>
-      </div>
-    </div>
-  );
-};
-
-const ContentPreview = () => (
-  <div className="space-y-2 text-sm text-gray-600">
-    <h3 className="font-semibold text-gray-900">Invoice Content</h3>
-    <p>Configure dates, payment terms, and notes.</p>
-  </div>
-);
-
-const ItemsPreview = () => (
-  <div className="space-y-2 text-sm text-gray-600">
-    <h3 className="font-semibold text-gray-900">Items</h3>
-    <p>Add products or services to your invoice.</p>
-  </div>
-);
-
-const TemplatePreview = () => (
-  <div className="space-y-2 text-sm text-gray-600">
-    <h3 className="font-semibold text-gray-900">Template</h3>
-    <p>Select and preview the invoice template.</p>
-  </div>
-);
