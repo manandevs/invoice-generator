@@ -56,7 +56,7 @@ export default function RootLayout({
       <head>
         <link rel="preload" href="/fonts/Suisse-Variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        <link rel="preload" href="/fonts/Gambarino-Regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/Ranade-Regular.woff" as="font" type="font/woff" crossOrigin="anonymous" />
       </head>
       {/* Browser extensions inject attributes into <body>; don't treat that as a hydration error. */}
       <body suppressHydrationWarning className={cn(camood.variable, "font-sans antialiased")}>

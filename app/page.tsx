@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import FAQ from "@/components/home/FAQ";
-import Features from "@/components/home/Features";
 import Hero from "@/components/home/Hero";
-import HowItWorks from "@/components/home/HowItWorks";
+import HowToCreate from "@/components/home/HowToCreate";
+import InvoiceElements from "@/components/home/InvoiceElements";
+import InvoiceFormat from "@/components/home/InvoiceFormat";
+import TemplateShowcase from "@/components/home/TemplateShowcase";
+import WhatIsInvoice from "@/components/home/WhatIsInvoice";
 import { FAQS } from "@/lib/content/faqs";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -42,8 +45,11 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
       <Hero />
-      <HowItWorks />
-      <Features />
+      <TemplateShowcase />
+      <WhatIsInvoice />
+      <HowToCreate />
+      <InvoiceFormat />
+      <InvoiceElements />
       <FAQ />
     </>
   );

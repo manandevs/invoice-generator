@@ -35,15 +35,7 @@
   font-display: swap;
 }
 
-/* Headings: Gambarino (serif) for h1/h2, Ranade (sans) for h3–h6. Both ship in Regular only. */
-@font-face {
-  font-family: Gambarino;
-  src: url("/fonts/Gambarino-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
+/* Headings: Ranade, Regular only. */
 @font-face {
   font-family: Ranade;
   src: url("/fonts/Ranade-Regular.woff") format("woff");
@@ -62,11 +54,11 @@
 }
 
 @theme inline {
+  --container-10xl: 104rem;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: geistNumbers, suisse, "suisse Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-heading: Gambarino, Georgia, "Times New Roman", serif;
-  --font-subheading: Ranade, suisse, "suisse Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: Ranade, suisse, "suisse Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-camood: var(--font-camood);
   --color-ring: var(--ring);
   --color-input: var(--input);
@@ -141,26 +133,19 @@
   body {
     @apply bg-background text-foreground;
   }
-  /* Stacks are written out because `@theme inline` doesn't emit --font-* as CSS variables. */
-  h1,
-  h2 {
-    font-family: Gambarino, Georgia, "Times New Roman", serif;
-    letter-spacing: -0.01em;
-  }
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: Ranade, suisse, "suisse Fallback", ui-sans-serif, system-ui, sans-serif;
-  }
-  /* Only Regular exists: render it as-is instead of letting the browser fake bold from `font-bold`. */
+  /*
+   * The stack is written out because `@theme inline` doesn't emit --font-* as CSS variables.
+   * Only Regular exists: render it as-is instead of letting the browser fake bold from `font-bold`.
+   */
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
+    font-family: Ranade, suisse, "suisse Fallback", ui-sans-serif, system-ui, sans-serif;
     font-synthesis-weight: none;
+    letter-spacing: -0.01em;
   }
   :focus-visible {
     outline: 2px solid var(--brand);
