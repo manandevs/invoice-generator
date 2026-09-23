@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useId, useState } from "react";
-import { AlertCircle, ChevronDown } from "lucide-react";
+import { AlertCircle, ChevronDown, type LucideIcon } from "lucide-react";
 import { fieldId } from "@/lib/invoice/schema";
 import { cn } from "@/lib/utils";
 
@@ -304,9 +304,67 @@ export function SelectField<T extends string>({
   );
 }
 
-/* ---------- collapsible form section ---------- */
+/* ---------- form cards ---------- */
 
+/** Shared by every card in the wizard so padding, borders and shadows stay consistent. */
+const CARD = "rounded-xl border border-border bg-white shadow-card";
+const CARD_HEADER = "flex items-center gap-3 px-4 py-3 sm:px-5 sm:py-3.5";
+const CARD_BODY = "p-4 sm:p-5";
+
+function CardTitle({ icon: Icon, title, description, titleId }: { icon?: LucideIcon; title: string; description?: string; titleId?: string }) {
+  return (
+    <span className="flex min-w-0 items-center gap-3">
+      {Icon && (
+        <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-brand-tint text-brand" aria-hidden>
+          <Icon className="size-4" />
+        </span>
+      )}
+      <span className="min-w-0">
+        <span id={titleId} className="block text-base leading-tight text-ink">
+          {title}
+        </span>
+        {description && <span className="mt-0.5 block truncate font-sans text-sm tracking-normal text-slate-600">{description}</span>}
+      </span>
+    </span>
+  );
+}
+
+/** A titled card for a group of fields. `labelledById` lets a radio group inside reference the title. */
+export function FormCard({
+  icon,
+  title,
+  description,
+  action,
+  labelledById,
+  className,
+  bodyClassName,
+  children,
+}: {
+  icon?: LucideIcon;
+  title: string;
+  description?: string;
+  action?: React.ReactNode;
+  labelledById?: string;
+  className?: string;
+  bodyClassName?: string;
+  children: React.ReactNode;
+}) {
+  const generated = useId();
+  const titleId = labelledById ?? generated;
+  return (
+    <section aria-labelledby={titleId} className={cn(CARD, className)}>
+      <h3 className={cn(CARD_HEADER, "justify-between border-b border-border")}>
+        <CardTitle icon={icon} title={title} description={description} titleId={titleId} />
+        {action}
+      </h3>
+      <div className={cn(CARD_BODY, bodyClassName)}>{children}</div>
+    </section>
+  );
+}
+
+/** A collapsible FormCard. */
 export function Section({
+  icon,
   title,
   description,
   open,
@@ -314,6 +372,7 @@ export function Section({
   errorCount = 0,
   children,
 }: {
+  icon?: LucideIcon;
   title: string;
   description?: string;
   open: boolean;
@@ -323,19 +382,16 @@ export function Section({
 }) {
   const contentId = useId();
   return (
-    <section className="rounded-xl border border-border bg-white shadow-card">
+    <section className={cn(CARD, errorCount > 0 && "border-destructive/40")}>
       <h3>
         <button
           type="button"
           onClick={onToggle}
           aria-expanded={open}
           aria-controls={contentId}
-          className="flex w-full items-center justify-between gap-3 rounded-xl px-4 py-3.5 text-left sm:px-5"
+          className={cn(CARD_HEADER, "w-full justify-between rounded-xl text-left transition-colors hover:bg-slate-50/70", open && "rounded-b-none")}
         >
-          <span className="min-w-0">
-            <span className="block font-semibold text-ink">{title}</span>
-            {description && <span className="block truncate text-sm text-slate-600">{description}</span>}
-          </span>
+          <CardTitle icon={icon} title={title} description={description} />
           <span className="flex shrink-0 items-center gap-2">
             {errorCount > 0 && (
               <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-destructive">
@@ -346,7 +402,7 @@ export function Section({
           </span>
         </button>
       </h3>
-      <div id={contentId} hidden={!open} className="border-t border-border px-4 pb-5 pt-4 sm:px-5">
+      <div id={contentId} hidden={!open} className={cn(CARD_BODY, "border-t border-border")}>
         {children}
       </div>
     </section>

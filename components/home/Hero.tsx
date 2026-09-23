@@ -6,7 +6,8 @@ const POINTS = ["No account needed", "Saved in your browser", "Tax, discounts & 
 
 const Hero = () => {
   return (
-    <section id="generator" className="relative scroll-mt-20 overflow-hidden bg-surface pb-20 pt-12 sm:pt-16">
+    <section id="generator" className="relative scroll-mt-20 overflow-clip bg-surface pb-20 pt-12 sm:pt-16">
+      {/* overflow-clip (not overflow-hidden) clips the decoration without breaking the sticky preview. */}
       {/* Faint dotted grid that fades out toward the generator. */}
       <div
         aria-hidden

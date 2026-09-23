@@ -61,8 +61,8 @@ export function DocumentStep() {
             <label
               key={type}
               className={cn(
-                "relative flex cursor-pointer flex-col gap-3 rounded-xl border-2 bg-white p-4 transition focus-within:ring-3 focus-within:ring-brand/25",
-                selected ? "border-brand bg-brand-tint/50 shadow-card" : "border-border hover:border-slate-300",
+                "relative flex cursor-pointer flex-col gap-3 rounded-xl border-2 bg-white p-4 transition duration-150 has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-brand/30",
+                selected ? "border-brand bg-brand-tint/50 shadow-md ring-4 ring-brand/15" : "border-border hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md motion-reduce:hover:translate-y-0",
               )}
             >
               <input

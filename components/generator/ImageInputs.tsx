@@ -118,18 +118,33 @@ export function SignatureInput({ value, onChange }: { value: string; onChange: (
   const drawing = useRef(false);
   const [dirty, setDirty] = useState(false);
 
+  // Size the drawing buffer to the pad's real size. The pad usually mounts inside a collapsed
+  // section (0×0), so a one-off measurement would leave strokes drawing into an empty buffer;
+  // a ResizeObserver catches the moment it becomes visible, and any later resize.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || mode !== "draw") return;
-    const ratio = window.devicePixelRatio || 1;
-    canvas.width = canvas.offsetWidth * ratio;
-    canvas.height = canvas.offsetHeight * ratio;
-    const ctx = canvas.getContext("2d")!;
-    ctx.scale(ratio, ratio);
-    ctx.lineWidth = 2.2;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.strokeStyle = "#0f172a";
+    const resize = () => {
+      const ratio = window.devicePixelRatio || 1;
+      const width = Math.round(canvas.clientWidth * ratio);
+      const height = Math.round(canvas.clientHeight * ratio);
+      if (!width || !height || (canvas.width === width && canvas.height === height)) return;
+      // Resizing clears the canvas, so carry existing strokes over.
+      const previous = canvas.width && canvas.height ? canvas.getContext("2d")!.getImageData(0, 0, canvas.width, canvas.height) : null;
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d")!;
+      if (previous) ctx.putImageData(previous, 0, 0);
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      ctx.lineWidth = 2.2;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = "#0f172a";
+    };
+    resize();
+    const observer = new ResizeObserver(resize);
+    observer.observe(canvas);
+    return () => observer.disconnect();
   }, [mode, value]);
 
   const point = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -186,7 +201,7 @@ export function SignatureInput({ value, onChange }: { value: string; onChange: (
           <canvas
             ref={canvasRef}
             aria-label="Signature pad. Draw your signature, then choose Use signature."
-            className="h-32 w-full touch-none rounded-lg border border-dashed border-input bg-white"
+            className="h-32 w-full cursor-crosshair touch-none rounded-lg border border-dashed border-input bg-white"
             onPointerDown={(e) => {
               e.currentTarget.setPointerCapture(e.pointerId);
               drawing.current = true;
@@ -218,7 +233,11 @@ export function SignatureInput({ value, onChange }: { value: string; onChange: (
               disabled={!dirty}
               onClick={() => {
                 const c = canvasRef.current!;
-                c.getContext("2d")!.clearRect(0, 0, c.width, c.height);
+                const ctx = c.getContext("2d")!;
+                ctx.save();
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, c.width, c.height);
+                ctx.restore();
                 setDirty(false);
               }}
             >

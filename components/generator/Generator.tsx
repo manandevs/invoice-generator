@@ -249,8 +249,8 @@ export default function Generator() {
       <div ref={topRef} className="grid gap-6 lg:grid-cols-12 lg:items-start">
         <div className="min-w-0 lg:col-span-7">
           <div className="rounded-2xl border border-border bg-white shadow-card">
-            <div className="border-b border-border p-4 sm:p-6">
-              <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
+            <div className="border-b border-border px-4 pb-5 pt-3 sm:px-6 sm:pt-4">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <SaveIndicator savedAt={savedAt} />
                 <Button type="button" variant="ghost" size="sm" onClick={() => setConfirmNew(true)} className="text-slate-700">
                   <FilePlus2 /> New invoice
@@ -259,10 +259,14 @@ export default function Generator() {
               <Stepper current={step} reachable={reachable} complete={complete} onSelect={goTo} />
             </div>
 
-            <div className="p-4 sm:p-6">
-              <div className="mb-5">
-                <h2 className="text-xl font-semibold text-ink sm:text-2xl">{current.label}</h2>
-                <p className="mt-1 text-slate-600">{current.description}</p>
+            <div className="bg-surface/50 p-4 sm:p-6">
+              <div className="mb-4 sm:mb-5">
+                {/* Hidden on phones, where the stepper already says "Step N of 4". */}
+                <p className="hidden text-xs font-semibold uppercase tracking-wider text-brand sm:block">
+                  Step {step + 1} of {STEPS.length}
+                </p>
+                <h2 className="mt-1 text-2xl leading-tight text-ink sm:text-[1.75rem]">{current.label}</h2>
+                <p className="mt-1 text-[15px] text-slate-600">{current.description}</p>
               </div>
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
@@ -277,7 +281,7 @@ export default function Generator() {
               </AnimatePresence>
             </div>
 
-            <div className="sticky bottom-0 z-20 flex items-center justify-between gap-3 rounded-b-2xl border-t border-border bg-white/95 p-4 backdrop-blur sm:px-6">
+            <div className="sticky bottom-0 z-20 flex items-center justify-between gap-3 rounded-b-2xl border-t border-border bg-white/95 px-4 py-3 backdrop-blur sm:px-6">
               <Button type="button" variant="outline" className="h-11 px-5" onClick={() => goTo(step - 1)} disabled={step === 0}>
                 <ArrowLeft /> Back
               </Button>
@@ -294,12 +298,13 @@ export default function Generator() {
           </div>
         </div>
 
-        <aside className="hidden min-w-0 lg:col-span-5 lg:block" aria-label="Preview">
-          <div className="sticky top-24">
+        {/* The aside stretches to the form's height so the preview can stay sticky beside it. */}
+        <aside className="hidden min-w-0 lg:col-span-5 lg:block lg:self-stretch" aria-label="Preview">
+          <div className="sticky top-20">
             {step === 0 ? (
               <DocumentInfoPanel />
             ) : (
-              <PreviewPane preview={preview} onDownload={download} className="h-[calc(100dvh-7.5rem)]" />
+              <PreviewPane preview={preview} onDownload={download} className="h-[calc(100dvh-6.5rem)] max-h-[60rem] shadow-card" />
             )}
           </div>
         </aside>

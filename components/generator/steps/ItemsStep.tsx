@@ -12,13 +12,13 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Copy, GripVertical, Plus, Trash2 } from "lucide-react";
+import { Calculator, Copy, GripVertical, ListOrdered, Plus, SlidersHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { calculateTotals, formatMoney, toMinor } from "@/lib/invoice/calc";
 import { fieldId, type Currency, type LineItem } from "@/lib/invoice/schema";
 import { useInvoiceStore } from "@/lib/invoice/store";
 import { cn } from "@/lib/utils";
-import { Field, NumberInput, inputClass, useFormField } from "../fields";
+import { Field, FormCard, NumberInput, inputClass, useFormField } from "../fields";
 
 const CURRENCY_SYMBOL: Record<Currency, string> = { USD: "$", EUR: "€", GBP: "£", PKR: "Rs" };
 
@@ -72,7 +72,7 @@ function ItemRow({
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
-        "rounded-xl border border-border bg-white p-3 sm:p-4",
+        "rounded-lg border border-border bg-white p-3 transition-colors hover:border-slate-300 sm:p-4",
         isDragging && "relative z-10 shadow-lg ring-2 ring-brand/30",
         rowError && "border-destructive/50",
       )}
@@ -192,8 +192,13 @@ export function ItemsStep() {
   const taxField = useFormField("defaultTaxRate");
 
   return (
-    <div className="space-y-5">
-      <div>
+    <div className="space-y-4">
+      <FormCard
+        icon={ListOrdered}
+        title="Line items"
+        description={`${inv.items.length} ${inv.items.length === 1 ? "row" : "rows"} · drag the handle to reorder`}
+        bodyClassName="bg-surface/60"
+      >
         <DndContext id="invoice-items" sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
           <SortableContext items={inv.items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
             <ol className="space-y-3" aria-label="Line items">
@@ -225,14 +230,13 @@ export function ItemsStep() {
             <Plus /> Add item
           </Button>
           <p id="tax-default-hint" className="mt-2 text-xs text-slate-600">
-            Leave Tax empty to use the default rate ({inv.defaultTaxRate || 0}%). Press Enter in the last row&apos;s Tax field to add a row. Drag the handle to reorder.
+            Leave Tax empty to use the default rate ({inv.defaultTaxRate || 0}%). Press Enter in the last row&apos;s Tax field to add a row.
           </p>
         </div>
-      </div>
+      </FormCard>
 
-      <div className="grid gap-5 lg:grid-cols-2">
-        <div className="space-y-4 rounded-xl border border-border bg-white p-4 shadow-card sm:p-5">
-          <h3 className="font-semibold text-ink">Adjustments</h3>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <FormCard icon={SlidersHorizontal} title="Adjustments" description="Discount, tax and shipping" bodyClassName="space-y-3.5">
           <Field label="Discount on subtotal" htmlFor={discountField.id} error={discountField.error}>
             <div className="flex gap-2">
               <NumberInput
@@ -270,10 +274,9 @@ export function ItemsStep() {
           <Field label="Shipping" htmlFor={shippingField.id} error={shippingField.error} help="Added after tax.">
             <NumberInput id={shippingField.id} value={inv.shipping} prefix={symbol} onValueChange={(v) => update({ shipping: v ?? Number.NaN })} onBlur={shippingField.onBlur} error={shippingField.error} />
           </Field>
-        </div>
+        </FormCard>
 
-        <div className="self-start rounded-xl border border-border bg-white p-4 shadow-card sm:p-5">
-          <h3 className="mb-3 font-semibold text-ink">Totals</h3>
+        <FormCard icon={Calculator} title="Totals" description="Updates as you type" className="self-start">
           <dl aria-live="polite">
           {[
             ["Subtotal", money(totals.subtotal)],
@@ -291,7 +294,7 @@ export function ItemsStep() {
             <dd className="text-xl font-bold tabular-nums">{money(totals.grandTotal)}</dd>
           </div>
           </dl>
-        </div>
+        </FormCard>
       </div>
     </div>
   );

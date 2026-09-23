@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useContext, useEffect, useState } from "react";
+import { Building2, CalendarDays, Landmark, NotebookPen, UserRound } from "lucide-react";
 import { TERM_LABELS } from "@/lib/invoice/calc";
 import { CURRENCY_INFO } from "@/lib/invoice/defaults";
 import { CURRENCIES, PAYMENT_TERMS, fieldId } from "@/lib/invoice/schema";
@@ -10,11 +11,11 @@ import { ImageUpload, SignatureInput } from "../ImageInputs";
 import { ProfileSync } from "../ProfileSync";
 
 const SECTIONS = {
-  general: { title: "General", prefixes: ["number", "issueDate", "dueDate", "validUntil", "poNumber", "paymentTerms", "currency"] },
-  from: { title: "From (your business)", prefixes: ["issuer."] },
-  to: { title: "Bill to", prefixes: ["client."] },
-  payment: { title: "Payment instructions", prefixes: ["paymentInstructions."] },
-  extras: { title: "Notes, terms & signature", prefixes: ["notes", "terms", "signature"] },
+  general: { title: "General", icon: CalendarDays, prefixes: ["number", "issueDate", "dueDate", "validUntil", "poNumber", "paymentTerms", "currency"] },
+  from: { title: "From (your business)", icon: Building2, prefixes: ["issuer."] },
+  to: { title: "Bill to", icon: UserRound, prefixes: ["client."] },
+  payment: { title: "Payment instructions", icon: Landmark, prefixes: ["paymentInstructions."] },
+  extras: { title: "Notes, terms & signature", icon: NotebookPen, prefixes: ["notes", "terms", "signature"] },
 } as const;
 
 type SectionId = keyof typeof SECTIONS;
@@ -57,6 +58,7 @@ export function DetailsStep() {
   const errorCount = (id: SectionId) => Object.keys(visible).filter((p) => inSection(id, p)).length;
   const section = (id: SectionId, description?: string) => ({
     title: SECTIONS[id].title,
+    icon: SECTIONS[id].icon,
     description,
     open: open[id],
     onToggle: () => setOpen((o) => ({ ...o, [id]: !o[id] })),
@@ -65,10 +67,10 @@ export function DetailsStep() {
 
   const isProforma = inv.documentType === "proforma";
   const isTax = inv.documentType === "tax_invoice";
-  const grid = "grid gap-4 sm:grid-cols-2";
+  const grid = "grid gap-x-4 gap-y-3.5 sm:grid-cols-2";
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <Section {...section("general", "Number, dates, terms and currency")}>
         <div className={grid}>
           <TextField
