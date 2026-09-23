@@ -1,60 +1,41 @@
 "use client";
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
 
-const faqs = [
-  {
-    q: "Is BillFlow really free to use?",
-    a: "Yes! Our basic invoice generator is completely free. You can create, preview, and download as many invoices as you need without any hidden costs.",
-  },
-  {
-    q: "Can I customize the colors of my invoice?",
-    a: "Absolutely. In the 'Template' step, you can choose from various accent colors to match your business branding.",
-  },
-  {
-    q: "Do you store my client's information?",
-    a: "No. BillFlow operates primarily on the client side. We do not store your personal data or your client's details on our servers.",
-  },
-  {
-    q: "How do I download the invoice as a PDF?",
-    a: "Once you fill in the details, head to the Template tab. You can preview your work and click the 'Download PDF' button in the preview pane.",
-  },
-];
+import React, { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { FAQS } from "@/lib/content/faqs";
+import { cn } from "@/lib/utils";
 
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faqs" className="py-24 bg-white px-6">
-      <div className="max-w-3xl mx-auto">
-        <h2 className="text-4xl font-bold text-[#1C1C1C] font-urbanist mb-12 text-center">Frequently Asked Questions</h2>
-        <div className="space-y-4">
-          {faqs.map((faq, i) => (
-            <div key={i} className="border border-gray-100 rounded-2xl overflow-hidden">
-              <button
-                onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                className="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors"
-              >
-                <span className="font-bold text-lg text-[#1C1C1C] font-urbanist">{faq.q}</span>
-                <ChevronDown className={`text-[#4F96E6] transition-transform ${openIndex === i ? "rotate-180" : ""}`} />
-              </button>
-              <AnimatePresence>
-                {openIndex === i && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
+    <section id="faqs" className="scroll-mt-20 bg-white px-4 py-20 sm:px-6">
+      <div className="mx-auto max-w-3xl">
+        <h2 className="mb-10 text-center text-3xl font-bold text-ink sm:text-4xl">Frequently asked questions</h2>
+        <div className="space-y-3">
+          {FAQS.map((faq, i) => {
+            const open = openIndex === i;
+            return (
+              <div key={faq.q} className="rounded-xl border border-border">
+                <h3>
+                  <button
+                    type="button"
+                    id={`faq-q-${i}`}
+                    aria-expanded={open}
+                    aria-controls={`faq-a-${i}`}
+                    onClick={() => setOpenIndex(open ? null : i)}
+                    className="flex w-full items-center justify-between gap-4 rounded-xl p-5 text-left transition-colors hover:bg-slate-50"
                   >
-                    <div className="p-6 pt-0 text-gray-600 font-urbanist leading-relaxed">
-                      {faq.a}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
+                    <span className="text-lg font-semibold text-ink">{faq.q}</span>
+                    <ChevronDown className={cn("size-5 shrink-0 text-brand transition-transform", open && "rotate-180")} aria-hidden />
+                  </button>
+                </h3>
+                <div id={`faq-a-${i}`} role="region" aria-labelledby={`faq-q-${i}`} hidden={!open} className="px-5 pb-5 leading-relaxed text-slate-700">
+                  {faq.a}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

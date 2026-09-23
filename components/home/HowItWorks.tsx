@@ -1,67 +1,50 @@
-"use client";
 import React from "react";
-import { motion } from "framer-motion";
-import { PencilLine, LayoutTemplate, Download } from "lucide-react";
+import { Download, FileText, LayoutTemplate, ListPlus } from "lucide-react";
+
+const steps = [
+  {
+    title: "Document",
+    description: "Choose an invoice, a tax invoice with VAT/GST details, or a proforma invoice.",
+    icon: FileText,
+  },
+  {
+    title: "Details",
+    description: "Add your business, your client, dates and payment terms. The due date is set for you.",
+    icon: ListPlus,
+  },
+  {
+    title: "Items",
+    description: "List products or services. Tax, discounts, shipping and totals are calculated to the cent.",
+    icon: LayoutTemplate,
+  },
+  {
+    title: "Design & Download",
+    description: "Pick one of 4 templates and an accent color, then download, print, share or email it.",
+    icon: Download,
+  },
+];
 
 const HowItWorks = () => {
-  const steps = [
-    {
-      number: "1 - Enter the data",
-      description:
-        "Fill in the fields with information about the supplier, client, and product or service details.",
-      icon: <PencilLine className="w-12 h-12 text-white" />,
-    },
-    {
-      number: "2 - Choose the Template",
-      description:
-        "Select the design and accent colors that best suit your professional brand identity.",
-      icon: <LayoutTemplate className="w-12 h-12 text-white" />,
-    },
-    {
-      number: "3 - Download the PDF",
-      description:
-        "Click download and get your professional invoice ready to send or print instantly.",
-      icon: <Download className="w-12 h-12 text-white" />,
-    },
-  ];
-
   return (
-    <section id="how-it-works" className="bg-[#4F96E6] py-20 px-6">
-      <div className="max-w-7xl mx-auto">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-white text-4xl md:text-5xl font-bold mb-16 font-urbanist"
-        >
-          How to create invoices in 3 steps
-        </motion.h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          {steps.map((step, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="flex flex-col"
-            >
-              <div className="aspect-video mb-6 overflow-hidden rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-sm shadow-xl">
-                <div className="relative">
-                  <div className="absolute -inset-4 bg-white/20 blur-xl rounded-full" />
-                  <div className="relative">{step.icon}</div>
+    <section id="how-it-works" className="bg-brand px-4 py-20 sm:px-6">
+      <div className="mx-auto max-w-7xl">
+        <h2 className="mb-12 text-3xl font-bold text-white sm:text-4xl md:text-5xl">How to create an invoice in 4 steps</h2>
+        <ol className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {steps.map((step, index) => {
+            const Icon = step.icon;
+            return (
+              <li key={step.title} className="rounded-2xl border border-white/20 bg-black/15 p-6">
+                <div className="mb-5 grid size-12 place-items-center rounded-xl bg-white text-brand">
+                  <Icon className="size-6" aria-hidden />
                 </div>
-              </div>
-              <h3 className="text-white text-xl font-bold mb-3 font-urbanist">
-                {step.number}
-              </h3>
-              <p className="text-white/90 text-[16px] leading-relaxed max-w-[300px] font-urbanist">
-                {step.description}
-              </p>
-            </motion.div>
-          ))}
-        </div>
+                <h3 className="mb-2 text-xl font-bold text-white">
+                  {index + 1}. {step.title}
+                </h3>
+                <p className="leading-relaxed text-white">{step.description}</p>
+              </li>
+            );
+          })}
+        </ol>
       </div>
     </section>
   );

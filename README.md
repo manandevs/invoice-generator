@@ -1,120 +1,36 @@
-# 🧾 BillFlow
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-<img width="1898" height="908" alt="image" src="https://github.com/user-attachments/assets/d3db32c4-deda-4c1e-b7c5-1534ab675152" />
+## Getting Started
 
-> **Streamlined Invoice Generation for Modern Businesses.**
-> BillFlow is an intuitive, wizard-driven web application designed to make billing effortless. Create professional invoices, tax invoices, and proforma documents through a seamless, guided 4-step process.
+First, run the development server:
 
-<div align="center">
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-  [![Live Demo](https://img.shields.io/badge/Live_Demo-Launch_App-4A90E2?style=for-the-badge&logo=vercel&logoColor=white)](https://your-demo-link.com/)
-  [![Framework](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-  [![Styling](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-</div>
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-<br />
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## 🚀 About The Project
+## Learn More
 
-**BillFlow** eliminates the friction of manual invoice creation. Built for freelancers, service-based businesses, and growing startups, it provides a clean, distraction-free interface that guides users through creating legally compliant billing documents. 
+To learn more about Next.js, take a look at the following resources:
 
-Instead of overwhelming users with a massive form, BillFlow breaks the process down into manageable steps with contextual guidance, ensuring you never miss critical details like tax information or line items.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## ✨ Key Features
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <br>
-      <h3>📝 Smart Document Types</h3>
-      <p>Easily select between standard Invoices, Tax Invoices, or Proforma Invoices with distinct templates for each.</p>
-      <br>
-    </td>
-    <td align="center" width="33%">
-      <br>
-      <h3>🛤️ Guided 4-Step Wizard</h3>
-      <p>A frictionless flow from Document Selection ➔ Content ➔ Line Items ➔ Final Template Design.</p>
-      <br>
-    </td>
-    <td align="center" width="33%">
-      <br>
-      <h3>💡 Contextual Assistance</h3>
-      <p>Real-time dynamic sidebars that explain what each document includes and provide clear "Next Steps".</p>
-      <br>
-    </td>
-  </tr>
-</table>
+## Deploy on Vercel
 
-## ⚙️ How BillFlow Works
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Our intuitive wizard ensures you create perfect invoices in minutes:
-
-*   **Step 1 | Document:** Choose the type of bill you need to generate (Invoice, Tax Invoice, Proforma). The system instantly adapts the required fields.
-*   **Step 2 | Content:** Enter client details, invoice numbers, and basic billing metadata.
-*   **Step 3 | Items:** Add your services, physical goods, quantities, and let BillFlow auto-calculate subtotals and taxes.
-*   **Step 4 | Template:** Select a professional design layout, preview the final result, and export as a PDF or send directly via email.
-
-## 🛠️ Tech Stack
-
-<div align="center">
-
-  <a href="https://reactjs.org/">
-    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
-  </a>
-  <a href="https://tailwindcss.com/">
-    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
-  </a>
-  <a href="https://www.typescriptlang.org/">
-    <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  </a>
-  <a href="https://vitejs.dev/">
-    <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
-  </a>
-
-</div>
-
-## 🚀 Getting Started
-
-To get a local development copy of BillFlow up and running, follow these steps.
-
-**Prerequisites**
-*   Node.js (v18+ recommended)
-
-**Installation**
-
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/your-username/billflow.git
-    cd billflow
-    ```
-
-2.  **Install dependencies**
-    ```bash
-    npm install
-    # or yarn install
-    ```
-
-3.  **Start the development server**
-    ```bash
-    npm run dev
-    ```
-
-4.  **Open your browser**
-    Navigate to `http://localhost:5173` to view the app.
-
-## 🤝 Contributing
-
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/NewBillingFeature`)
-3.  Commit your Changes (`git commit -m 'Add some NewBillingFeature'`)
-4.  Push to the Branch (`git push origin feature/NewBillingFeature`)
-5.  Open a Pull Request
-
----
-
-<div align="center">
-  <p>Built with 💙 by <b>Your Name / Team</b></p>
-</div>
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

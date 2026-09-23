@@ -1,122 +1,96 @@
-"use client";
-import React from "react";
-import { motion } from "framer-motion";
-import { PencilLine, LayoutTemplate, Download, CheckCircle2 } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight, CheckCircle2, Download, FileText, LayoutTemplate, ListPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-const HowItWorks = () => {
-  const steps = [
-    {
-      id: "01",
-      title: "Enter the data",
-      description:
-        "Fill in the fields with information about the supplier, client, and product or service details. Our smart forms validate as you type.",
-      icon: <PencilLine className="w-8 h-8 text-[#4F96E6]" />,
-      features: ["Auto-save progress", "Currency detection", "Tax calculations"],
-    },
-    {
-      id: "02",
-      title: "Choose the Template",
-      description:
-        "Select the design that best suits your professional brand. Customize accent colors to match your business identity perfectly.",
-      icon: <LayoutTemplate className="w-8 h-8 text-[#4F96E6]" />,
-      features: ["Modern layouts", "Custom branding", "Real-time preview"],
-    },
-    {
-      id: "03",
-      title: "Download the PDF",
-      description:
-        "Click download and get your professional invoice ready. Send it directly to your clients or print it for your records.",
-      icon: <Download className="w-8 h-8 text-[#4F96E6]" />,
-      features: ["Print-ready PDF", "Direct email sharing", "Mobile optimized"],
-    },
-  ];
+export const metadata: Metadata = {
+  title: "How it works",
+  description: "Create an invoice in 4 steps: pick the document, add details, list items, then choose a design and download the PDF.",
+  alternates: { canonical: "/how-it-works" },
+};
 
+// Every bullet maps to a feature that ships in the generator.
+const steps = [
+  {
+    id: "01",
+    title: "Document",
+    description: "Choose a standard invoice, a tax invoice with VAT/GST details, or a proforma invoice for quotes and customs.",
+    icon: FileText,
+    features: ["Invoice, tax invoice or proforma", "Right title and fields for each", "Switch type any time"],
+  },
+  {
+    id: "02",
+    title: "Details",
+    description: "Add your business and your client. Required fields are checked as you go, and your draft saves itself in your browser.",
+    icon: ListPlus,
+    features: ["Validation as you type", "Auto-saved in your browser", "Payment terms set the due date", "Logo, bank details & signature"],
+  },
+  {
+    id: "03",
+    title: "Items",
+    description: "List products or services. Totals update live, with tax per line, a discount on the subtotal and shipping.",
+    icon: LayoutTemplate,
+    features: ["Tax calculations per line", "Discounts & shipping", "USD, EUR, GBP & PKR", "Drag to reorder"],
+  },
+  {
+    id: "04",
+    title: "Design & Download",
+    description: "Pick a template and accent color while watching the live preview, then get the PDF to your client.",
+    icon: Download,
+    features: ["4 templates + custom color", "Print-ready A4 PDF", "Shareable link", "Pre-filled email draft", "Works on mobile"],
+  },
+];
+
+export default function HowItWorksPage() {
   return (
-    <section 
-      id="how-it-works" 
-      className="relative min-h-screen flex items-center bg-[#4F96E6] pt-32 pb-8 px-6 overflow-hidden"
-    >
-      {/* Background Decorative Elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-[10%] -left-[10%] w-[40%] h-[40%] bg-white/5 rounded-full blur-3xl" />
-      </div>
-
-      <div className="max-w-7xl mx-auto w-full relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-          
-          {/* Left Column: Heading */}
-          <div className="lg:col-span-4 text-white">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <h2 className="text-5xl md:text-6xl font-bold font-urbanist leading-tight mb-8">
-                Invoicing <br />
-                <span className="text-blue-100">Simplified.</span>
-              </h2>
-              <p className="text-lg text-blue-50 font-urbanist mb-10 max-w-sm">
-                Creating professional invoices shouldn't take hours. With BillFlow, it takes seconds. 
-                Follow these three simple steps to get paid faster.
-              </p>
-              
-              <div className="flex items-center gap-4">
-                <span className="text-sm uppercase tracking-widest font-semibold text-white/60 font-urbanist">
-                  The Workflow
-                </span>
-              </div>
-            </motion.div>
+    <section className="bg-surface px-4 py-14 sm:px-6 sm:py-20">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12">
+          <div className="lg:sticky lg:top-28 lg:col-span-4">
+            <p className="text-sm font-semibold uppercase tracking-widest text-brand">The workflow</p>
+            <h1 className="mt-3 text-4xl font-bold leading-tight text-ink sm:text-5xl">
+              Invoicing, <span className="text-brand">simplified.</span>
+            </h1>
+            <p className="mt-5 max-w-sm text-lg text-slate-700">
+              A professional invoice shouldn&apos;t take hours. With BillFlow it takes four short steps, and you see the finished PDF the whole
+              time.
+            </p>
+            <Button asChild className="mt-8 h-12 rounded-full px-6 text-base">
+              <Link href="/#generator">
+                Create an invoice <ArrowRight />
+              </Link>
+            </Button>
           </div>
 
-          {/* Right Column: Large Step Cards */}
-          <div className="lg:col-span-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {steps.map((step, index) => (
-                <motion.div
-                  key={step.id}
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.15, duration: 0.5 }}
-                  className={`${
-                    index === 2 ? "md:col-span-2" : "md:col-span-1"
-                  } group bg-white rounded-[2rem] p-8 md:p-10 shadow-2xl shadow-blue-900/20 hover:shadow-blue-900/30 transition-all duration-500 border border-white/20`}
-                >
-                  <div className="flex justify-between items-start mb-8">
-                    <div className="w-16 h-16 bg-[#4F96E6]/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                      {step.icon}
-                    </div>
-                    <span className="text-4xl font-bold text-gray-100 font-urbanist">
-                      {step.id}
-                    </span>
+          <ol className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:col-span-8">
+            {steps.map(({ id, title, description, icon: Icon, features }) => (
+              <li key={id} className="rounded-2xl border border-border bg-white p-7 shadow-card sm:p-8">
+                <div className="mb-6 flex items-start justify-between">
+                  <div className="grid size-14 place-items-center rounded-2xl bg-brand-tint text-brand">
+                    <Icon className="size-7" aria-hidden />
                   </div>
-
-                  <h3 className="text-2xl font-bold text-[#1C1C1C] mb-4 font-urbanist group-hover:text-[#4F96E6] transition-colors">
-                    {step.title}
-                  </h3>
-                  <p className="text-gray-500 font-urbanist leading-relaxed mb-8">
-                    {step.description}
-                  </p>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    {step.features.map((feature) => (
-                      <div key={feature} className="flex items-center gap-2 text-sm font-medium text-gray-700 font-urbanist">
-                        <CheckCircle2 size={16} className="text-[#4F96E6]" />
-                        {feature}
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
+                  <span className="text-4xl font-bold text-slate-300" aria-hidden>
+                    {id}
+                  </span>
+                </div>
+                <h2 className="mb-3 text-2xl font-bold text-ink">
+                  <span className="sr-only">Step {Number(id)}: </span>
+                  {title}
+                </h2>
+                <p className="mb-6 leading-relaxed text-slate-700">{description}</p>
+                <ul className="grid gap-2.5 sm:grid-cols-2">
+                  {features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2 text-sm font-medium text-slate-800">
+                      <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ol>
         </div>
       </div>
     </section>
   );
-};
-
-export default HowItWorks;
+}
